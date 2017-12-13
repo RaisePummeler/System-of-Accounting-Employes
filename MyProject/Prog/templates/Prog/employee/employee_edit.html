@@ -1,0 +1,19 @@
+{% extends "Prog\\base.html" %}
+
+{% load static from staticfiles %}
+{% load crispy_forms_tags %}
+{% block meta_title %}Редагувати Працівника{% endblock meta_title %}
+
+{% block title %}Редагувати Працівника{% endblock title %}
+
+{% block content %}
+{% crispy form %}
+{% endblock content %}
+
+{% block status_message %}
+    {% if form.errors %}
+        <div class="alert alert-warning" role="alert">
+            Будь-ласка, виправте наступні помилки
+        </div>
+    {% endif %}
+{% endblock status_message %}

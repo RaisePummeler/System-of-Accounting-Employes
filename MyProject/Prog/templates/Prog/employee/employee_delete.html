@@ -1,0 +1,24 @@
+{% extends "Prog\\base.html" %}
+
+{% load static from staticfiles %}
+{% load crispy_forms_tags %}
+{% block meta_title %}Видалити Працівника{% endblock meta_title %}
+
+{% block title %}Видалити Працівника{% endblock title %}
+
+{% block content %}
+<form action="{% url "employee_delete" object.id %}" method="post">
+{% csrf_token %}
+<p>Ви дійсно хочете видалити працівника "{{ object }}"?</p>
+<input type="submit" value="Так" name="delete_button"
+class="btn btn-danger" /><br/><br/>
+</form>
+{% endblock content %}
+
+{% block status_message %}
+    {% if form.errors %}
+        <div class="alert alert-warning" role="alert">
+            Будь-ласка, виправте наступні помилки
+        </div>
+    {% endif %}
+{% endblock status_message %}

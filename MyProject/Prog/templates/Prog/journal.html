@@ -1,0 +1,55 @@
+{% extends "Prog\\base.html" %}
+{% load static from staticfiles %}
+{% load crispy_forms_tags %}
+{% block meta_title %}Облік Відвідування{% endblock meta_title %}
+{% block title %}Облік Відвідування{% endblock title %}
+{% block content %}
+
+{% if not employee %}
+<div class="alert alert-warning">Поки немає жодного працівника в базі. Будь-ласка, <a href="{% url "employee_add" %}">додайте</a> першого.</div>
+{% else %}
+<div class="alert alert-warning">Зміни в журнал зберігаються автоматично при кожному кліку в клітинці таблиці.
+<span id="ajax-progress-indicator">Йде збереження...</span>
+</div>
+<p id="journal-nav" class="text-center"><a href="?month={{ prev_month }}" title="Попередній Місяць">&larr;</a>
+<!-- TODO: translate month name -->
+<strong>{{ month_verbose }} {{ year }}</strong>
+<a href="?month={{ next_month }}" title="Наступний Місяць">&rarr;</a></p>
+<table class="table table-hover table-striped table-bordered" id="employee-journal"><thead>
+<tr class="header">
+<th class="num">#</th>
+<th class="name">Працівник</th>
+{% for day in month_header %}<th class="day-header"><!-- TODO: translate day name -->{{ day.verbose }}<br/>{{ day.day }}</th>{% endfor %}
+</tr>
+</thead>
+<tbody>
+{% csrf_token %}
+{% for employee in employee %}
+<tr><td>{% if is_paginated %}{{ page_obj.start_index|add:forloop.counter|add:"-1" }}{% else %}{{ forloop.counter }}{% endif %}</td>
+<td><a title="Редагувати" target="_blank" href="{% url "employee_edit" employee.id %}">{{ employee.fullname }}</a></td>
+{% for day in employee.days %}
+<td class="day-box">
+<input type="checkbox" data-employee-id="{{ employee.id }}" data-date="{{ day.date }}" data-url="{{ employee.update_url }}"
+       value="1"{% if day.present %} checked="checked" {% endif %} /></td>
+{% endfor %}
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+{% with object_list=employees %}
+{% if employee.has_other_pages %}
+{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
+<nav>
+<ul class="pagination"><li><a href="{% url "home" %}?page=1&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">&laquo;</a></li>
+{% for p in employee.paginator.page_range %}
+<li {% if employee.number == p %}class="active"{% endif %}>
+<a href="{% url "journal" %}?page={{ p }}&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">{{ p }}</a></li>
+{% endfor %}
+<li><a href="{% url "journal" %}?page={{ employee.paginator.num_pages}}&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">&raquo;</a></li>
+</ul>
+</nav>
+{% endwith %}
+{% endif %}
+{% endwith %}
+{% endblock content %}

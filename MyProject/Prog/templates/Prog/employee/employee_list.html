@@ -1,0 +1,75 @@
+{% extends "Prog\\base.html" %}
+
+{% load static from staticfiles %}
+
+{% block meta_title %}Працівники{% endblock meta_title %}
+
+{% block title %}База Працівників{% endblock title %}
+btn btn-primary
+{% block content %}
+<a href="{% url "employee_add" %}" class="btn btn-primary employee-add-form-link">Додати Працівника</a>
+<!-- Start Employee Listing -->
+<table class="table">
+{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
+<thead>
+<tr>
+<th>#</th>
+<th>Фото</th>
+<th><a href="{% url "home" %}?order_by=last_name{% if order_by == 'last_name' and reverse != '1' %}&amp;reverse=1{% endif %}">
+    Прізвище{% if order_by == 'last_name' and reverse != '1' %}&uarr;{% elif order_by == 'last_name' and reverse == '1' %}&darr;
+    {% endif %}</a></th>
+<th><a href="{% url "home" %}?order_by=first_name{% if order_by == 'first_name' and reverse != '1' %}&amp;reverse=1{% endif %}">
+    Ім'я{% if order_by == 'first_name' and reverse != '1' %}&uarr;{% elif order_by == 'first_name' and reverse == '1' %}&darr;
+    {% endif %}</a></th>
+<th><a href="{% url "home" %}?order_by=level{% if order_by == 'level' and reverse != '1' %}&amp;reverse=1{% endif %}">
+    Кваліфікація{% if order_by == 'level' and reverse != '1' %}&uarr;{% elif order_by == 'level' and reverse == '1' %}&darr;{% endif %}</a></th>
+{% if user.is_authenticated %}
+<th>Дії</th>
+{% endif%}
+</tr>
+</thead>
+{% endwith %}
+<tbody>
+{% for employee in employee %}
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{% if employee.photo %}<img class="img-circle" src="{{ employee.photo.url }}" height="30" width="30" />
+    {% else %}<img class="img-circle" src="/media/default.png" height="30" width="30" /></td>{% endif %}
+<td><a href="{% url "employee_edit" employee.id %}" class="employee-edit-form-link"></a>{{ employee.last_name }}</td>
+<td><a href="{% url "employee_edit" employee.id %}" class="employee-edit-form-link"></a>{{ employee.first_name }}</td>
+<td>{{ employee.level }}</td>
+{% if user.is_authenticated %}
+<td>
+<div class="btn-group">
+<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Дія
+<span class="caret"></span>
+</button>
+{% endif%}
+<ul class="dropdown-menu" role="menu">
+<li><a href="{% url "employee_edit" employee.id %}" class="employee-edit-form-link">Редагувати</a></li>
+<li><a href="{% url "journal" employee.id %}">Відвідування</a></li>
+<li><a href="{% url "employee_delete" employee.id %}" class="employee-delete-form-link">Видалити</a></li>
+</ul>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<!-- End Employee Listing -->
+
+{% if employee.has_other_pages %}
+{% with order_by=request.GET.order_by reverse=request.GET.reverse %}
+<nav>
+<ul class="pagination">
+<li><a href="{% url "home" %}?page=1&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">&laquo;</a></li>
+{% for p in employee.paginator.page_range %}
+<li {% if employee.number == p %}class="active"{% endif %}>
+<a href="{% url "home" %}?page={{ p }}&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">{{ p }}</a></li>
+{% endfor %}
+<li><a href="{% url "home" %}?page={{ employee.paginator.num_pages}}&amp;order_by={{ order_by }}&amp;reverse={{ reverse }}">&raquo;</a></li>
+</ul>
+</nav>
+{% endwith %}
+{% endif %}
+{% endblock content %}

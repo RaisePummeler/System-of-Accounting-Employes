@@ -1,0 +1,44 @@
+{% extends "Prog\\base.html" %}
+<!-------------------------------------------------No useble------------------------------------------>
+{% load static from staticfiles %}
+{% load crispy_forms_tags %}
+{% block meta_title %}Додати Проект{% endblock meta_title %}
+
+{% block title %}Додати Проект{% endblock title %}
+
+{% block content %}
+<form action="{% url "groups_add" %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
+{% csrf_token %}
+<div class="form-group {% if errors.first_name %}has-error{% endif %}">
+    <label for="title" class="col-sm-2 control-label">Назва проекту*</label><div class="col-sm-10"><input type="text" value="{{ request.POST.title }}" name="title"
+    id="first_name" class="form-control" placeholder="Введіть назву"/><span class="help-block">{{ errors.first_name }}</span></div></div>
+
+<div class="form-group {% if errors.last_name %}has-error{% endif %}">
+    <label for="leader" class="col-sm-2 control-label">Керівник*</label><div class="col-sm-10"><input type="text" value="{{ request.POST.leader }}" name="leader" id="leader"
+    placeholder="Введіть працівника" class="form-control" /><span class="help-block">{{ errors.last_name }}</span></div></div>
+<!---------------------------
+<div class="form-group {% if errors.leader %}has-error{% endif %}">
+    <label for="leader" class="col-sm-2 control-label">Керівник</label><div class="col-sm-10">
+    <select name="leader" id="leader" class="form-control"><option value="">Оберіть керівника</option>
+    {% for employee in employee %}
+        <option value="{{ leader.id }}" {% if leader.id == request.leader|add:0 %}selected="1"{% endif %}>{{ leader.last_name }}</option>
+    {% endfor %}
+</select></div></div>
+------------------------------------------>
+<div class="form-group {% if errors.notes %}has-error{% endif %}">
+    <label for="notes" class="col-sm-2 control-label">Додаткові Нотатки</label><div class="col-sm-10">
+    <textarea name="notes" id="notes" class="form-control">{{ request.POST.notes }}</textarea>
+    <span class="help-block">{{ errors.notes }}</span></div></div>
+<div class="form-group"><label class="col-sm-2 control-label"></label><div class="col-sm-10">
+    <input type="submit" value="Додати" name="add_button" class="btn btn-primary" />
+    <button type="submit" name="cancel_button" class="btn btn-link">Скасувати</button></div></div>
+</form>
+{% endblock content %}
+
+{% block status_message %}
+    {% if form.errors %}
+        <div class="alert alert-warning" role="alert">
+            Будь-ласка, виправте наступні помилки
+        </div>
+    {% endif %}
+{% endblock status_message %}
